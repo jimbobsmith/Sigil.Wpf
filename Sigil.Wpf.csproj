@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Sigil.Wpf</RootNamespace>
+    <AssemblyName>Sigil.Wpf</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1573;1574</NoWarn>
+    <IsPackable>true</IsPackable>
+    <PackageId>Sigil.Wpf</PackageId>
+    <Product>Sigil.Wpf</Product>
+    <Title>Sigil.Wpf</Title>
+    <Authors>Jim Smith</Authors>
+    <Description>WPF rules engine: bind the value in XAML; drive IsEnabled, ToolTip, Background, and any other DP from fluent view-model rules. Not the Sigil IL-emitter package.</Description>
+    <PackageTags>wpf;xaml;mvvm;binding;rules</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/jimbobsmith/Sigil.Wpf</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/jimbobsmith/Sigil.Wpf</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright (c) 2026 Jim Smith</Copyright>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Sigil.Wpf.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Sigil.Wpf.Tests\**" />
+    <EmbeddedResource Remove="Sigil.Wpf.Tests\**" />
+    <None Remove="Sigil.Wpf.Tests\**" />
+    <Compile Remove="Sigil.Wpf.Demo\**" />
+    <EmbeddedResource Remove="Sigil.Wpf.Demo\**" />
+    <None Remove="Sigil.Wpf.Demo\**" />
+    <Page Remove="Sigil.Wpf.Demo\**" />
+    <ApplicationDefinition Remove="Sigil.Wpf.Demo\**" />
+    <Compile Remove="Sigil.Wpf.Demo.Themed\**" />
+    <EmbeddedResource Remove="Sigil.Wpf.Demo.Themed\**" />
+    <None Remove="Sigil.Wpf.Demo.Themed\**" />
+    <Page Remove="Sigil.Wpf.Demo.Themed\**" />
+    <ApplicationDefinition Remove="Sigil.Wpf.Demo.Themed\**" />
+  </ItemGroup>
+</Project>
