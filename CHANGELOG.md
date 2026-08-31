@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - README section on implementing `ISigilViewModel` on an existing view-model base (Caliburn `Screen`, and similar).
 - `Sigil.Wpf.Demo.Caliburn` — Caliburn.Micro `Screen` interop demo (engine created in the constructor, disposed on deactivate).
+- Demos include a `DataGrid` of per-row view models; screen properties (line amount limit, highlight, freeze Posted, lock/hold) drive cell chrome.
+- `AutoBind.ApplyTo` uses each control's `ISigilViewModel` when the DataContext is a row.
+- `SigilViewModel.RaisePropertyChanged` also raises `Item[]`, so setters only name the property. Override the same way on a foreign base (see the Caliburn demo).
+- Demo line items dispose on remove and when the window closes, so they unhook the parent `PropertyChanged` handler.
 
 ## [0.1.0] - 2026-08-28
 

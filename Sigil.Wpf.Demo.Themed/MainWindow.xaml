@@ -7,9 +7,9 @@
                  Title="Sigil — Material Design + MahApps"
                  TitleCharacterCasing="Normal"
                  Width="1080"
-                 Height="800"
+                 Height="920"
                  MinWidth="920"
-                 MinHeight="680"
+                 MinHeight="740"
                  GlowBrush="{DynamicResource PrimaryHueMidBrush}"
                  WindowStartupLocation="CenterScreen"
                  TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -116,7 +116,83 @@
 
                         <TextBox Text="{Binding ReferenceCode, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 materialDesign:HintAssist.Hint="Reference (exempt, Material TextBox)" />
+                                 materialDesign:HintAssist.Hint="Reference (exempt, Material TextBox)"
+                                 Margin="0,0,0,16" />
+
+                        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Text="Line items" />
+                        <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                                   Margin="0,4,0,8"
+                                   TextWrapping="Wrap"
+                                   Text="Line amount limit and highlight apply to the Amount column. Removing a row disposes it (unhooks the parent). Closing the window disposes the rest." />
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBox DockPanel.Dock="Left"
+                                     Text="{Binding LineLimit, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Line amount limit"
+                                     Width="150"
+                                     Margin="0,0,12,0" />
+                            <StackPanel VerticalAlignment="Center">
+                                <CheckBox Content="Highlight Amount over the limit"
+                                          IsChecked="{Binding HighlightOverLimit}"
+                                          Style="{StaticResource MaterialDesignCheckBox}"
+                                          Margin="0,0,0,4" />
+                                <CheckBox Content="Freeze Posted rows"
+                                          IsChecked="{Binding FreezePostedLines}"
+                                          Style="{StaticResource MaterialDesignCheckBox}" />
+                            </StackPanel>
+                        </DockPanel>
+                        <WrapPanel Margin="0,0,0,8">
+                            <Button Content="Add line" Style="{StaticResource MaterialDesignOutlinedButton}" Click="AddLine_OnClick" Margin="0,0,8,8" />
+                            <Button Content="Remove selected" Style="{StaticResource MaterialDesignOutlinedButton}" Click="RemoveSelectedLine_OnClick" Margin="0,0,8,8" />
+                        </WrapPanel>
+                        <DataGrid ItemsSource="{Binding Lines}"
+                                  SelectedItem="{Binding SelectedLine}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal"
+                                  MaxHeight="200">
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="IsEnabled" Value="{Binding IsRowEnabled}" />
+                                    <Setter Property="Opacity" Value="{Binding RowOpacity}" />
+                                    <Setter Property="ToolTip" Value="{Binding RowToolTip}" />
+                                </Style>
+                            </DataGrid.RowStyle>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Item" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                                     BorderThickness="0"
+                                                     Padding="4,2"
+                                                     sigil:AutoBind.Enabled="True" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Amount" Width="90">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}"
+                                                     BorderThickness="0"
+                                                     Padding="4,2"
+                                                     sigil:AutoBind.Enabled="True" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Status" Width="110">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding StatusOptions}"
+                                                      SelectedItem="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      BorderThickness="0"
+                                                      sigil:AutoBind.Enabled="True" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </ScrollViewer>
             </materialDesign:Card>

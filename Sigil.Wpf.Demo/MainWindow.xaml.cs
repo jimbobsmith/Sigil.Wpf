@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 
 namespace Sigil.Wpf.Demo
@@ -8,6 +9,12 @@ namespace Sigil.Wpf.Demo
         {
             InitializeComponent();
             DataContext = new DemoViewModel();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            (DataContext as IDisposable)?.Dispose();
+            base.OnClosed(e);
         }
 
         private DemoViewModel ViewModel => (DemoViewModel)DataContext;
@@ -45,6 +52,16 @@ namespace Sigil.Wpf.Demo
         private void ResetNotes_OnClick(object sender, RoutedEventArgs e)
         {
             ViewModel.ResetNotes();
+        }
+
+        private void AddLine_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.AddLine();
+        }
+
+        private void RemoveSelectedLine_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.RemoveSelectedLine();
         }
     }
 }

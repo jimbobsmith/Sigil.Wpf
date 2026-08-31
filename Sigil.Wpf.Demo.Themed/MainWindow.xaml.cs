@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using Sigil.Wpf.Demo;
 using MahApps.Metro.Controls;
@@ -11,6 +12,12 @@ namespace Sigil.Wpf.Demo.Themed
         {
             InitializeComponent();
             DataContext = new DemoViewModel();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            (DataContext as IDisposable)?.Dispose();
+            base.OnClosed(e);
         }
 
         private DemoViewModel ViewModel => (DemoViewModel)DataContext;
@@ -48,6 +55,16 @@ namespace Sigil.Wpf.Demo.Themed
         private void ResetNotes_OnClick(object sender, RoutedEventArgs e)
         {
             ViewModel.ResetNotes();
+        }
+
+        private void AddLine_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.AddLine();
+        }
+
+        private void RemoveSelectedLine_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.RemoveSelectedLine();
         }
 
         private void ToggleTheme_OnClick(object sender, RoutedEventArgs e)

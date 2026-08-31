@@ -17,5 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Sigil.Wpf.Demo\DemoViewModel.cs" Link="DemoViewModel.cs" />
+    <Compile Include="..\Sigil.Wpf.Demo\InvoiceLineViewModel.cs" Link="InvoiceLineViewModel.cs" />
   </ItemGroup>
 </Project>

@@ -46,13 +46,12 @@ public class InvoiceViewModel : SigilViewModel
         {
             _amount = value;
             RaisePropertyChanged(nameof(Amount));
-            NotifyIndexer();
         }
     }
 }
 ```
 
-`SigilViewModel` owns the engine, the `[IsEnabled.Amount]` indexer, and `INotifyPropertyChanged`. Dispose the view model when the view goes away.
+`SigilViewModel` owns the engine, the `[IsEnabled.Amount]` indexer, and `INotifyPropertyChanged`. `RaisePropertyChanged(nameof(Amount))` also raises `Item[]`, so setters do not call `NotifyIndexer()` themselves. Dispose the view model when the view goes away.
 
 ## Using your own view-model base
 
@@ -83,6 +82,8 @@ public class InvoiceScreen : Screen, ISigilViewModel
     public void RaisePropertyChanged(string propertyName)
     {
         NotifyOfPropertyChange(propertyName);
+        if (propertyName != "Item[]")
+            NotifyOfPropertyChange("Item[]");
     }
 
     protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
@@ -116,6 +117,8 @@ The match function receives the **property name** (`"Amount"`), not the value. C
 Layout properties such as `Visibility` are not auto-attached — bind those explicitly when they live on a different element (for example a warning banner).
 
 Third-party controls work if they expose a normal WPF `Value` / `Text` / `SelectedItem` DP. The themed demo uses Material Design and MahApps.
+
+A `DataGrid` row can be its own view model. Bind row chrome to a normal property (`IsEnabled="{Binding IsRowEnabled}"`) and put `AutoBind.Enabled="True"` on cell editors. If a rule disables the row when Status changes, refresh that property on the next dispatcher turn — disabling the row on the same turn cancels the DataGrid edit. Screen properties that the row closes over (a line amount limit, freeze Posted rows, lock) refresh cells when the screen raises `PropertyChanged`. Dispose a row when it leaves the collection so it unhooks the parent; dispose the screen when the window closes so remaining rows and engines go away. The demos show this: stock and themed rows inherit `SigilViewModel`; the Caliburn rows implement `ISigilViewModel` on `PropertyChangedBase`.
 
 ## Projects
 

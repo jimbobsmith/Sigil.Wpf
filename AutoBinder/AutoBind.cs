@@ -40,8 +40,7 @@ namespace Sigil.Wpf.AutoBinder
             {
                 element.Loaded += OnLoaded;
                 element.DataContextChanged += OnDataContextChanged;
-                if (element.IsLoaded)
-                    DependencyBinder.ApplyTo(element);
+                DependencyBinder.ApplyTo(element);
             }
             else
             {
@@ -60,7 +59,7 @@ namespace Sigil.Wpf.AutoBinder
         private static void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var element = sender as FrameworkElement;
-            if (element != null && element.IsLoaded)
+            if (element != null)
                 DependencyBinder.ApplyTo(element);
         }
     }

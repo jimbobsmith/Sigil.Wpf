@@ -4,9 +4,9 @@
         xmlns:sigil="clr-namespace:Sigil.Wpf.AutoBinder;assembly=Sigil.Wpf"
         Title="Sigil — any dependency property"
         Width="1000"
-        Height="760"
+        Height="900"
         MinWidth="900"
-        MinHeight="640"
+        MinHeight="720"
         Background="#F4F4F5"
         sigil:AutoBind.Enabled="True">
     <Window.Resources>
@@ -88,6 +88,71 @@
 
                 <TextBlock Style="{StaticResource Label}" Text="Reference  —  [StateChangeExempt], including Opacity" />
                 <TextBox Text="{Binding ReferenceCode, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Text="Line items" FontSize="16" FontWeight="SemiBold" Margin="0,8,0,4" />
+                <TextBlock Style="{StaticResource Hint}"
+                           Text="Each row is its own SigilViewModel. Line amount limit and highlight apply to the Amount column (yellow over the limit, bold red and disabled over 2×). Freeze Posted, hold, and lock set IsRowEnabled after Status commits (disabling the row on the same turn cancels the ComboBox edit). Removing a row disposes it (unhooks the parent). Closing the window disposes the rest." />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="Line amount limit" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Text="{Binding LineLimit, UpdateSourceTrigger=PropertyChanged}" Width="72" Margin="0,0,16,0" />
+                    <CheckBox Content="Highlight Amount over the limit" IsChecked="{Binding HighlightOverLimit}" Margin="0,0,16,0" VerticalAlignment="Center" />
+                    <CheckBox Content="Freeze Posted rows" IsChecked="{Binding FreezePostedLines}" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="Add line" Click="AddLine_OnClick" Margin="0,0,8,0" Padding="10,4" />
+                    <Button Content="Remove selected" Click="RemoveSelectedLine_OnClick" Padding="10,4" />
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding Lines}"
+                          SelectedItem="{Binding SelectedLine}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          MaxHeight="200"
+                          Margin="0,0,0,10">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="IsEnabled" Value="{Binding IsRowEnabled}" />
+                            <Setter Property="Opacity" Value="{Binding RowOpacity}" />
+                            <Setter Property="ToolTip" Value="{Binding RowToolTip}" />
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Item" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0"
+                                             Padding="4,2"
+                                             sigil:AutoBind.Enabled="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Amount" Width="90">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0"
+                                             Padding="4,2"
+                                             sigil:AutoBind.Enabled="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Status" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding StatusOptions}"
+                                              SelectedItem="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              BorderThickness="0"
+                                              Margin="0"
+                                              MinHeight="22"
+                                              sigil:AutoBind.Enabled="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
             </StackPanel>
         </ScrollViewer>
 

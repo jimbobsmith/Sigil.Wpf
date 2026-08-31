@@ -29,7 +29,22 @@ namespace Sigil.Wpf.Engine
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc />
+        /// <remarks>
+        /// Notifies <paramref name="propertyName"/>, then <c>Item[]</c>, so setters only need
+        /// <c>RaisePropertyChanged(nameof(Status))</c>. Call <see cref="NotifyPropertyChanged"/>
+        /// when a derived display property should not refresh indexer bindings.
+        /// </remarks>
         public virtual void RaisePropertyChanged(string propertyName)
+        {
+            NotifyPropertyChanged(propertyName);
+            if (!IsIndexerName(propertyName))
+                NotifyPropertyChanged("Item[]");
+        }
+
+        /// <summary>
+        /// Raises <see cref="PropertyChanged"/> for <paramref name="propertyName"/> only.
+        /// </summary>
+        protected void NotifyPropertyChanged(string propertyName)
         {
             var handler = PropertyChanged;
             if (handler != null)
@@ -41,7 +56,12 @@ namespace Sigil.Wpf.Engine
         /// </summary>
         protected void NotifyIndexer()
         {
-            RaisePropertyChanged("Item[]");
+            NotifyPropertyChanged("Item[]");
+        }
+
+        private static bool IsIndexerName(string propertyName)
+        {
+            return string.Equals(propertyName, "Item[]", StringComparison.Ordinal);
         }
 
         /// <inheritdoc />

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -35,6 +37,10 @@ namespace Sigil.Wpf.Demo
         private string _notes = DefaultNotes;
         private string _status = "Draft";
         private string _referenceCode = "REF-100";
+        private int _lineLimit = 400;
+        private bool _highlightOverLimit = true;
+        private bool _freezePostedLines;
+        private InvoiceLineViewModel _selectedLine;
 
         public DemoViewModel()
         {
@@ -129,9 +135,29 @@ namespace Sigil.Wpf.Demo
                 .PropertyRule(() => Status, _ => Status == "Rejected", Brushes.Crimson, RuleResult.FallThrough);
             engine.Add.Binding(Control.FontWeightProperty)
                 .PropertyRule(() => Status, _ => Status != "Draft", FontWeights.SemiBold, RuleResult.FallThrough);
+
+            Lines = new ObservableCollection<InvoiceLineViewModel>
+            {
+                new InvoiceLineViewModel(this, "Paper ream", 80, "Open"),
+                new InvoiceLineViewModel(this, "Widget", 450, "Open"),
+                new InvoiceLineViewModel(this, "Rush kit", 950, "Posted")
+            };
+            Lines.CollectionChanged += OnLinesChanged;
         }
 
         public string[] StatusOptions { get; } = { "Draft", "Review", "Approved", "Rejected" };
+
+        public ObservableCollection<InvoiceLineViewModel> Lines { get; }
+
+        public InvoiceLineViewModel SelectedLine
+        {
+            get { return _selectedLine; }
+            set
+            {
+                _selectedLine = value;
+                RaisePropertyChanged(nameof(SelectedLine));
+            }
+        }
 
         public bool IsLocked
         {
@@ -226,6 +252,36 @@ namespace Sigil.Wpf.Demo
             }
         }
 
+        public int LineLimit
+        {
+            get { return _lineLimit; }
+            set
+            {
+                _lineLimit = value;
+                RaisePropertyChanged(nameof(LineLimit));
+            }
+        }
+
+        public bool HighlightOverLimit
+        {
+            get { return _highlightOverLimit; }
+            set
+            {
+                _highlightOverLimit = value;
+                RaisePropertyChanged(nameof(HighlightOverLimit));
+            }
+        }
+
+        public bool FreezePostedLines
+        {
+            get { return _freezePostedLines; }
+            set
+            {
+                _freezePostedLines = value;
+                RaisePropertyChanged(nameof(FreezePostedLines));
+            }
+        }
+
         [StateChangeExempt]
         public string ReferenceCode
         {
@@ -314,6 +370,20 @@ namespace Sigil.Wpf.Demo
             Notes = DefaultNotes;
         }
 
+        public void AddLine()
+        {
+            Lines.Add(new InvoiceLineViewModel(this, "New item", 0, "Open"));
+        }
+
+        public void RemoveSelectedLine()
+        {
+            if (SelectedLine == null)
+                return;
+
+            Lines.Remove(SelectedLine);
+            SelectedLine = null;
+        }
+
         private static SolidColorBrush Freeze(Color color)
         {
             var brush = new SolidColorBrush(color);
@@ -345,29 +415,49 @@ namespace Sigil.Wpf.Demo
             return "Default";
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && Lines != null)
+            {
+                Lines.CollectionChanged -= OnLinesChanged;
+                foreach (var line in Lines)
+                    line.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void OnLinesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems == null)
+                return;
+
+            foreach (InvoiceLineViewModel line in e.OldItems)
+                line.Dispose();
+        }
+
         private void RefreshRules()
         {
-            RaisePropertyChanged("Item[]");
-            RaisePropertyChanged(nameof(AmountOverLimit));
-            RaisePropertyChanged(nameof(AmountWarning));
-            RaisePropertyChanged(nameof(AmountChrome));
-            RaisePropertyChanged(nameof(NameChrome));
-            RaisePropertyChanged(nameof(NameMissing));
-            RaisePropertyChanged(nameof(NotesUrgent));
-            RaisePropertyChanged(nameof(NotesThin));
-            RaisePropertyChanged(nameof(NotesApproved));
-            RaisePropertyChanged(nameof(NotesChrome));
-            RaisePropertyChanged(nameof(StatusChrome));
-            RaisePropertyChanged(nameof(NameTooltip));
-            RaisePropertyChanged(nameof(AmountTooltip));
-            RaisePropertyChanged(nameof(NotesTooltip));
-            RaisePropertyChanged(nameof(StatusTooltip));
-            RaisePropertyChanged(nameof(ReferenceTooltip));
-            RaisePropertyChanged(nameof(NameWinner));
-            RaisePropertyChanged(nameof(AmountWinner));
-            RaisePropertyChanged(nameof(NotesWinner));
-            RaisePropertyChanged(nameof(StatusWinner));
-            RaisePropertyChanged(nameof(ReferenceWinner));
+            NotifyPropertyChanged(nameof(AmountOverLimit));
+            NotifyPropertyChanged(nameof(AmountWarning));
+            NotifyPropertyChanged(nameof(AmountChrome));
+            NotifyPropertyChanged(nameof(NameChrome));
+            NotifyPropertyChanged(nameof(NameMissing));
+            NotifyPropertyChanged(nameof(NotesUrgent));
+            NotifyPropertyChanged(nameof(NotesThin));
+            NotifyPropertyChanged(nameof(NotesApproved));
+            NotifyPropertyChanged(nameof(NotesChrome));
+            NotifyPropertyChanged(nameof(StatusChrome));
+            NotifyPropertyChanged(nameof(NameTooltip));
+            NotifyPropertyChanged(nameof(AmountTooltip));
+            NotifyPropertyChanged(nameof(NotesTooltip));
+            NotifyPropertyChanged(nameof(StatusTooltip));
+            NotifyPropertyChanged(nameof(ReferenceTooltip));
+            NotifyPropertyChanged(nameof(NameWinner));
+            NotifyPropertyChanged(nameof(AmountWinner));
+            NotifyPropertyChanged(nameof(NotesWinner));
+            NotifyPropertyChanged(nameof(StatusWinner));
+            NotifyPropertyChanged(nameof(ReferenceWinner));
         }
     }
 }

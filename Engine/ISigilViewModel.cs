@@ -24,6 +24,8 @@ namespace Sigil.Wpf.Engine
         /// <summary>
         /// Raises <see cref="INotifyPropertyChanged.PropertyChanged"/>.
         /// The engine calls this with <c>Item[]</c> when rules need the UI to refresh.
+        /// Typical implementations also raise <c>Item[]</c> after the named property
+        /// so setters only call <c>RaisePropertyChanged(nameof(Status))</c>.
         /// </summary>
         void RaisePropertyChanged(string propertyName);
     }

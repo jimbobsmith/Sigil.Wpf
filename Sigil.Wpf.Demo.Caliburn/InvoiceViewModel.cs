@@ -1,3 +1,6 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,6 +30,10 @@ namespace Sigil.Wpf.Demo.Caliburn
         private int _amount = 250;
         private string _name = "Ada Lovelace";
         private string _referenceCode = "REF-100";
+        private int _lineLimit = 400;
+        private bool _highlightOverLimit = true;
+        private bool _freezePostedLines;
+        private InvoiceLineViewModel _selectedLine;
 
         public InvoiceViewModel()
         {
@@ -70,6 +77,26 @@ namespace Sigil.Wpf.Demo.Caliburn
                 .PropertyRule(() => Name, _ => string.IsNullOrWhiteSpace(Name), "[Property] Name is required", RuleResult.FallThrough);
             engine.Add.Binding(Control.BackgroundProperty)
                 .PropertyRule(() => Name, _ => string.IsNullOrWhiteSpace(Name), NameMissingBrush, RuleResult.FallThrough);
+
+            Lines = new ObservableCollection<InvoiceLineViewModel>
+            {
+                new InvoiceLineViewModel(this, "Paper ream", 80, "Open"),
+                new InvoiceLineViewModel(this, "Widget", 450, "Open"),
+                new InvoiceLineViewModel(this, "Rush kit", 950, "Posted")
+            };
+            Lines.CollectionChanged += OnLinesChanged;
+        }
+
+        public ObservableCollection<InvoiceLineViewModel> Lines { get; }
+
+        public InvoiceLineViewModel SelectedLine
+        {
+            get { return _selectedLine; }
+            set
+            {
+                _selectedLine = value;
+                RaisePropertyChanged(nameof(SelectedLine));
+            }
         }
 
         public IRuleEngine Engine { get; set; }
@@ -79,6 +106,8 @@ namespace Sigil.Wpf.Demo.Caliburn
         public void RaisePropertyChanged(string propertyName)
         {
             NotifyOfPropertyChange(propertyName);
+            if (!string.Equals(propertyName, "Item[]", StringComparison.Ordinal))
+                NotifyOfPropertyChange("Item[]");
         }
 
         public bool IsLocked
@@ -88,7 +117,6 @@ namespace Sigil.Wpf.Demo.Caliburn
             {
                 _isLocked = value;
                 RaisePropertyChanged(nameof(IsLocked));
-                RefreshRules();
             }
         }
 
@@ -115,7 +143,6 @@ namespace Sigil.Wpf.Demo.Caliburn
                 }
 
                 RaisePropertyChanged(nameof(IsOnHold));
-                RefreshRules();
             }
         }
 
@@ -126,7 +153,6 @@ namespace Sigil.Wpf.Demo.Caliburn
             {
                 _amount = value;
                 RaisePropertyChanged(nameof(Amount));
-                RefreshRules();
             }
         }
 
@@ -137,7 +163,36 @@ namespace Sigil.Wpf.Demo.Caliburn
             {
                 _name = value;
                 RaisePropertyChanged(nameof(Name));
-                RefreshRules();
+            }
+        }
+
+        public int LineLimit
+        {
+            get { return _lineLimit; }
+            set
+            {
+                _lineLimit = value;
+                RaisePropertyChanged(nameof(LineLimit));
+            }
+        }
+
+        public bool HighlightOverLimit
+        {
+            get { return _highlightOverLimit; }
+            set
+            {
+                _highlightOverLimit = value;
+                RaisePropertyChanged(nameof(HighlightOverLimit));
+            }
+        }
+
+        public bool FreezePostedLines
+        {
+            get { return _freezePostedLines; }
+            set
+            {
+                _freezePostedLines = value;
+                RaisePropertyChanged(nameof(FreezePostedLines));
             }
         }
 
@@ -167,17 +222,44 @@ namespace Sigil.Wpf.Demo.Caliburn
             Name = "Ada Lovelace";
         }
 
+        public void AddLine()
+        {
+            Lines.Add(new InvoiceLineViewModel(this, "New item", 0, "Open"));
+        }
+
+        public void RemoveSelectedLine()
+        {
+            if (SelectedLine == null)
+                return;
+
+            Lines.Remove(SelectedLine);
+            SelectedLine = null;
+        }
+
         protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
         {
             if (close)
+            {
+                if (Lines != null)
+                {
+                    Lines.CollectionChanged -= OnLinesChanged;
+                    foreach (var line in Lines)
+                        line.Dispose();
+                }
+
                 Engine.Dispose();
+            }
 
             return base.OnDeactivateAsync(close, cancellationToken);
         }
 
-        private void RefreshRules()
+        private void OnLinesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            RaisePropertyChanged("Item[]");
+            if (e.OldItems == null)
+                return;
+
+            foreach (InvoiceLineViewModel line in e.OldItems)
+                line.Dispose();
         }
 
         private static SolidColorBrush Freeze(Color color)

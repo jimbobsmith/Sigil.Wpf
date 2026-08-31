@@ -146,6 +146,29 @@ namespace Sigil.Wpf.Tests
         }
 
         [Test]
+        public void ApplyTo_uses_the_control_DataContext_engine()
+        {
+            var parent = new TestViewModel();
+            parent.Engine.AddPropertyDefault(UIElement.IsEnabledProperty, true);
+
+            var row = new TestViewModel();
+            row.Engine.AddPropertyDefault(Control.BackgroundProperty, Brushes.White);
+
+            var box = new TextBox();
+            box.SetBinding(TextBox.TextProperty, new Binding(nameof(TestViewModel.Name)));
+            box.DataContext = row;
+
+            var panel = new StackPanel { DataContext = parent };
+            panel.Children.Add(box);
+
+            DependencyBinder.ApplyTo(panel);
+
+            Assert.That(BindingOperations.GetBinding(box, Control.BackgroundProperty).Path.Path,
+                Is.EqualTo("[Background.Name]"));
+            Assert.That(BindingOperations.GetBinding(box, UIElement.IsEnabledProperty), Is.Null);
+        }
+
+        [Test]
         public void ApplyTo_does_nothing_when_root_or_view_model_is_missing()
         {
             Assert.That(() => DependencyBinder.ApplyTo(null), Throws.Nothing);

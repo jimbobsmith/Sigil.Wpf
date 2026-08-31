@@ -9,7 +9,7 @@ namespace Sigil.Wpf.Tests
     public class SigilViewModelTests
     {
         [Test]
-        public void Indexer_and_NotifyIndexer_refresh_bindings()
+        public void RaisePropertyChanged_also_notifies_the_indexer()
         {
             using (var vm = new SampleViewModel())
             {
@@ -17,18 +17,15 @@ namespace Sigil.Wpf.Tests
                 vm.Engine.Add.Binding(UIElement.IsEnabledProperty)
                     .PropertyRule(() => vm.Amount, _ => vm.Amount > 10, false, RuleResult.FallThrough);
 
-                var notified = false;
-                vm.PropertyChanged += (_, e) =>
-                {
-                    if (e.PropertyName == "Item[]")
-                        notified = true;
-                };
+                var names = new System.Collections.Generic.List<string?>();
+                vm.PropertyChanged += (_, e) => names.Add(e.PropertyName);
 
                 Assert.That(vm["IsEnabled.Amount"], Is.True);
 
                 vm.Amount = 25;
 
-                Assert.That(notified, Is.True);
+                Assert.That(names, Does.Contain(nameof(SampleViewModel.Amount)));
+                Assert.That(names, Does.Contain("Item[]"));
                 Assert.That(vm["IsEnabled.Amount"], Is.False);
             }
         }
@@ -67,7 +64,6 @@ namespace Sigil.Wpf.Tests
                 {
                     _amount = value;
                     RaisePropertyChanged(nameof(Amount));
-                    NotifyIndexer();
                 }
             }
         }
@@ -82,7 +78,7 @@ namespace Sigil.Wpf.Tests
                 set
                 {
                     _amount = value;
-                    RaisePropertyChanged(nameof(Amount));
+                    NotifyPropertyChanged(nameof(Amount));
                 }
             }
         }

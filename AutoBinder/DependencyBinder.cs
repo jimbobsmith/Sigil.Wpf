@@ -123,12 +123,12 @@ namespace Sigil.Wpf.AutoBinder
             if (root == null)
                 return;
 
-            var vm = FindViewModel(root);
-            if (vm == null || vm.Engine == null)
-                return;
-
             foreach (var control in WalkControls(root))
-                ApplyToControl(control, vm.Engine);
+            {
+                var vm = control.DataContext as ISigilViewModel ?? FindViewModel(control);
+                if (vm != null && vm.Engine != null)
+                    ApplyToControl(control, vm.Engine);
+            }
         }
 
         /// <summary>
