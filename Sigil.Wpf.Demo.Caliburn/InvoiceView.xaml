@@ -32,8 +32,14 @@
         </Style>
     </Window.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="20">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" MinHeight="180" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
             <TextBlock Text="Caliburn.Micro interop" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4" />
             <TextBlock Style="{StaticResource Hint}"
                        Text="This window is a Caliburn Screen that implements ISigilViewModel. It does not inherit SigilViewModel. The engine is created in the constructor and disposed in OnDeactivateAsync. XAML binds values; AutoBind attaches the rest. Buttons use cal:Message.Attach." />
@@ -57,17 +63,20 @@
 
             <TextBlock Style="{StaticResource Label}" Text="Reference  —  [StateChangeExempt], including Opacity" />
             <TextBox Text="{Binding ReferenceCode, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+        </ScrollViewer>
 
-            <TextBlock Text="Line items" FontSize="16" FontWeight="SemiBold" Margin="0,8,0,4" />
-            <TextBlock Style="{StaticResource Hint}"
+        <DockPanel Grid.Row="1" Margin="0,12,0,0" LastChildFill="True">
+            <TextBlock DockPanel.Dock="Top" Text="Line items" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
+            <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}"
                        Text="Each row implements ISigilViewModel on PropertyChangedBase — not SigilViewModel. Line amount limit and highlight apply to the Amount column. Removing a row disposes it (unhooks the parent). Closing the window disposes the rest." />
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
                 <TextBlock Text="Line amount limit" VerticalAlignment="Center" Margin="0,0,8,0" />
                 <TextBox Text="{Binding LineLimit, UpdateSourceTrigger=PropertyChanged}" Width="72" Margin="0,0,16,0" />
                 <CheckBox Content="Highlight Amount over the limit" IsChecked="{Binding HighlightOverLimit}" Margin="0,0,16,0" VerticalAlignment="Center" />
                 <CheckBox Content="Freeze Posted rows" IsChecked="{Binding FreezePostedLines}" VerticalAlignment="Center" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
                 <Button Content="Add line" cal:Message.Attach="AddLine" Margin="0,0,8,0" Padding="10,4" />
                 <Button Content="Remove selected" cal:Message.Attach="RemoveSelectedLine" Padding="10,4" />
             </StackPanel>
@@ -78,8 +87,9 @@
                       CanUserDeleteRows="False"
                       HeadersVisibility="Column"
                       GridLinesVisibility="Horizontal"
-                      MaxHeight="200"
-                      Margin="0,0,0,10">
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      VerticalAlignment="Stretch">
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
                         <Setter Property="IsEnabled" Value="{Binding IsRowEnabled}" />
@@ -122,13 +132,15 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+        </DockPanel>
 
-            <GroupBox Header="Temporary / Global">
+        <StackPanel Grid.Row="2" Margin="0,12,0,0">
+            <GroupBox Header="Temporary / AllProperties">
                 <StackPanel>
                     <CheckBox Content="Hold for review  —  TemporaryRule on every non-exempt field"
                               IsChecked="{Binding IsOnHold}"
                               Margin="0,0,0,8" />
-                    <CheckBox Content="Lock form  —  GlobalRule IsEnabled + Opacity"
+                    <CheckBox Content="Lock form  —  AllPropertiesRule IsEnabled + Opacity"
                               IsChecked="{Binding IsLocked}" />
                 </StackPanel>
             </GroupBox>
@@ -147,5 +159,5 @@
                 </StackPanel>
             </GroupBox>
         </StackPanel>
-    </ScrollViewer>
+    </Grid>
 </Window>

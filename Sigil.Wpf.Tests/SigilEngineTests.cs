@@ -33,28 +33,28 @@ namespace Sigil.Wpf.Tests
         public void Indexer_delegates_to_ApplyRulesTo()
         {
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(p => p == nameof(TestViewModel.Name), false, RuleResult.FallThrough);
+                .AllPropertiesRule(p => p == nameof(TestViewModel.Name), false, RuleResult.FallThrough);
 
             Assert.That(_vm["IsEnabled.Name"], Is.False);
             Assert.That(_vm["IsEnabled.FirstName"], Is.True);
         }
 
         [Test]
-        public void GlobalRule_skips_StateChangeExempt_on_the_view_model_property()
+        public void AllPropertiesRule_skips_StateChangeExempt_on_the_view_model_property()
         {
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => true, false, RuleResult.FallThrough);
+                .AllPropertiesRule(_ => true, false, RuleResult.FallThrough);
 
             Assert.That(_engine.ApplyRulesTo("IsEnabled.ExemptName"), Is.True);
             Assert.That(_engine.ApplyRulesTo("IsEnabled.Name"), Is.False);
         }
 
         [Test]
-        public void GlobalRule_finds_StateChangeExempt_on_a_null_nested_object()
+        public void AllPropertiesRule_finds_StateChangeExempt_on_a_null_nested_object()
         {
             _vm.Address = null;
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => true, false, RuleResult.FallThrough);
+                .AllPropertiesRule(_ => true, false, RuleResult.FallThrough);
 
             Assert.That(_engine.ApplyRulesTo("IsEnabled.Address.City"), Is.True);
             Assert.That(_engine.ApplyRulesTo("IsEnabled.Address.Street"), Is.False);
@@ -64,9 +64,9 @@ namespace Sigil.Wpf.Tests
         public void Tooltip_lookup_uses_the_exact_view_model_property()
         {
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(p => p == nameof(TestViewModel.FirstName), false, RuleResult.FallThrough, "from first");
+                .AllPropertiesRule(p => p == nameof(TestViewModel.FirstName), false, RuleResult.FallThrough, "from first");
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(p => p == nameof(TestViewModel.Name), false, RuleResult.FallThrough, "from name");
+                .AllPropertiesRule(p => p == nameof(TestViewModel.Name), false, RuleResult.FallThrough, "from name");
 
             Assert.That(_engine.ApplyRulesTo("IsEnabled.FirstName"), Is.False);
             Assert.That(_engine.ApplyRulesTo("ToolTip.Name"), Is.Null);
@@ -199,7 +199,7 @@ namespace Sigil.Wpf.Tests
         public void ApplyRulesTo_key_without_a_dot_uses_an_empty_view_model_path()
         {
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(p => p == string.Empty, false, RuleResult.FallThrough);
+                .AllPropertiesRule(p => p == string.Empty, false, RuleResult.FallThrough);
 
             Assert.That(_engine.ApplyRulesTo("IsEnabled"), Is.False);
             Assert.That(_engine.ApplyRulesTo("IsEnabled.Name"), Is.True);
@@ -230,7 +230,7 @@ namespace Sigil.Wpf.Tests
             _engine.Add.Binding(UIElement.IsEnabledProperty)
                 .PropertyRule(() => _vm.Name, _ => true, false, RuleResult.FallThrough);
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => true, "global", RuleResult.FallThrough);
+                .AllPropertiesRule(_ => true, "global", RuleResult.FallThrough);
 
             Assert.That(_engine.ApplyRulesTo("IsEnabled.Name"), Is.EqualTo("global"));
 
@@ -243,18 +243,18 @@ namespace Sigil.Wpf.Tests
             _engine.Remove.TemporaryRule("unused");
 
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => false, "never", RuleResult.FallThrough);
+                .AllPropertiesRule(_ => false, "never", RuleResult.FallThrough);
 
             Assert.That(_engine.ApplyRulesTo("IsEnabled.Name"), Is.EqualTo("global"));
         }
 
         [Test]
-        public void GlobalRule_no_match_value_blocks_later_property_rules()
+        public void AllPropertiesRule_no_match_value_blocks_later_property_rules()
         {
             _engine.Add.Binding(UIElement.IsEnabledProperty)
                 .PropertyRule(() => _vm.Name, _ => true, "property", RuleResult.FallThrough);
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => false, "matched", false);
+                .AllPropertiesRule(_ => false, "matched", false);
 
             Assert.That(_engine.ApplyRulesTo("IsEnabled.Name"), Is.False);
         }
@@ -296,14 +296,25 @@ namespace Sigil.Wpf.Tests
         }
 
         [Test]
-        public void TemporaryRule_fallthrough_reaches_the_global_rule()
+        public void TemporaryRule_fallthrough_reaches_the_all_properties_rule()
         {
             _engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => true, "global", RuleResult.FallThrough);
+                .AllPropertiesRule(_ => true, "global", RuleResult.FallThrough);
             _engine.Add.Binding(UIElement.IsEnabledProperty)
                 .TemporaryRule("hold", _ => false, "temp", RuleResult.FallThrough);
 
             Assert.That(_engine.ApplyRulesTo("IsEnabled.Name"), Is.EqualTo("global"));
+        }
+
+        [Test]
+        public void Obsolete_GlobalRule_matches_AllPropertiesRule()
+        {
+#pragma warning disable CS0618
+            _engine.Add.Binding(UIElement.IsEnabledProperty)
+                .GlobalRule(_ => true, "legacy", RuleResult.FallThrough);
+#pragma warning restore CS0618
+
+            Assert.That(_engine.ApplyRulesTo("IsEnabled.Name"), Is.EqualTo("legacy"));
         }
 
         [Test]

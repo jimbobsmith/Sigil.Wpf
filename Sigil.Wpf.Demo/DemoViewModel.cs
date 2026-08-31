@@ -16,7 +16,7 @@ namespace Sigil.Wpf.Demo
         public const string HoldOpacityRuleKey = "review-hold-opacity";
 
         public const string TemporaryTooltip = "[Temporary] Held for review";
-        public const string GlobalTooltip = "[Global] Form is locked";
+        public const string GlobalTooltip = "[AllProperties] Form is locked";
         public const string AmountPropertyTooltip = "[Property] Amount exceeds the $1,000 limit";
         public const string NamePropertyTooltip = "[Property] Name is required";
         public const string NotesUrgentTooltip = "[Property] URGENT — flagged in notes";
@@ -60,11 +60,11 @@ namespace Sigil.Wpf.Demo
             engine.AddPropertyDefault(TextBox.IsReadOnlyProperty, false);
 
             engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => IsLocked, false, RuleResult.FallThrough, GlobalTooltip);
+                .AllPropertiesRule(_ => IsLocked, false, RuleResult.FallThrough, GlobalTooltip);
             engine.Add.Binding(FrameworkElement.ToolTipProperty)
-                .GlobalRule(_ => IsLocked, GlobalTooltip, RuleResult.FallThrough);
+                .AllPropertiesRule(_ => IsLocked, GlobalTooltip, RuleResult.FallThrough);
             engine.Add.Binding(UIElement.OpacityProperty)
-                .GlobalRule(_ => IsLocked, 0.45, RuleResult.FallThrough);
+                .AllPropertiesRule(_ => IsLocked, 0.45, RuleResult.FallThrough);
 
             engine.Add.Binding(UIElement.IsEnabledProperty)
                 .PropertyRule(() => Amount, _ => Amount > 1000, false, RuleResult.FallThrough, AmountPropertyTooltip);
@@ -403,7 +403,7 @@ namespace Sigil.Wpf.Demo
             if (IsOnHold)
                 return "Temporary";
             if (IsLocked)
-                return "Global";
+                return "AllProperties";
             if (property == nameof(Amount) && (AmountOverLimit || AmountWarning))
                 return "Property";
             if (property == nameof(Name) && (NameMissing || IsRush))

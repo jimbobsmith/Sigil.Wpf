@@ -12,7 +12,7 @@ namespace Sigil.Wpf.Engine
     public interface IRuleEngine : IDisposable
     {
         /// <summary>
-        /// Starts a fluent add: <c>engine.Add.Binding(UIElement.IsEnabledProperty).GlobalRule(...)</c>.
+        /// Starts a fluent add: <c>engine.Add.Binding(UIElement.IsEnabledProperty).AllPropertiesRule(...)</c>.
         /// </summary>
         IBindingRuleType Add { get; }
 

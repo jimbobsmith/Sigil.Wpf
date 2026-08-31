@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SigilViewModel.RaisePropertyChanged` also raises `Item[]`, so setters only name the property. Override the same way on a foreign base (see the Caliburn demo).
 - Demo line items dispose on remove and when the window closes, so they unhook the parent `PropertyChanged` handler.
 
+### Changed
+
+- Renamed `GlobalRule` to `AllPropertiesRule` (every non-exempt property on this engine). `GlobalRule` remains as an obsolete alias.
+
 ## [0.1.0] - 2026-08-28
 
 ### Added

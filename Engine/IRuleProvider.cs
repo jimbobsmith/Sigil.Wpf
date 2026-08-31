@@ -8,7 +8,7 @@ namespace Sigil.Wpf.Engine
     /// <see cref="IBindingRuleType.Binding"/>.
     /// </summary>
     /// <remarks>
-    /// Evaluation order is <see cref="TemporaryRule"/>, then <see cref="GlobalRule"/>,
+    /// Evaluation order is <see cref="TemporaryRule"/>, then <see cref="AllPropertiesRule"/>,
     /// then <see cref="PropertyRule{TProp}"/>, then the engine default.
     /// <para>
     /// The match function receives the view-model property name
@@ -23,8 +23,16 @@ namespace Sigil.Wpf.Engine
     public interface IRuleProvider
     {
         /// <summary>
-        /// A rule that can apply to every non-exempt view-model property.
+        /// A rule that can apply to every non-exempt property on this engine
+        /// (this view model, not the whole application).
         /// </summary>
+        IRuleEngine AllPropertiesRule(Func<string, bool> matchFunction, object? resultIfMatch, object? resultIfNoMatch,
+                                      string? tooltip = null);
+
+        /// <summary>
+        /// Obsolete name for <see cref="AllPropertiesRule"/>. Same behavior.
+        /// </summary>
+        [Obsolete("Use AllPropertiesRule. Same behavior: every non-exempt property on this engine.")]
         IRuleEngine GlobalRule(Func<string, bool> matchFunction, object? resultIfMatch, object? resultIfNoMatch,
                                string? tooltip = null);
 

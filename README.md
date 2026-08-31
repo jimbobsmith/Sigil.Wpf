@@ -100,7 +100,7 @@ The library does not ship Caliburn types. See `Sigil.Wpf.Demo.Caliburn` for a ru
 ## Rule order
 
 1. **TemporaryRule** — add and remove at runtime (`engine.Remove.TemporaryRule("hold")` deletes it)
-2. **GlobalRule** — every non-exempt property
+2. **AllPropertiesRule** — every non-exempt property on this engine (this view model)
 3. **PropertyRule** — one view-model property
 4. **Default** — `AddPropertyDefault`
 

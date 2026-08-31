@@ -18,7 +18,7 @@ namespace Sigil.Wpf.Engine.Impl
     /// (for example <c>IsEnabled.Amount</c>).
     /// </summary>
     /// <remarks>
-    /// Priority is Temporary, then Global, then Property, then the registered default.
+    /// Priority is Temporary, then AllProperties, then Property, then the registered default.
     /// <see cref="StateChangeExemptAttribute"/> on the view-model property skips every rule.
     /// <see cref="Sigil.Wpf.RuleResult.FallThrough"/> as <c>resultIfNoMatch</c> skips to the next rule;
     /// <c>null</c> is a real value.

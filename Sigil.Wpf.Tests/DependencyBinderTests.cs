@@ -169,6 +169,37 @@ namespace Sigil.Wpf.Tests
         }
 
         [Test]
+        public void ApplyTo_uses_each_row_DataContext_when_siblings_have_different_engines()
+        {
+            var parent = new TestViewModel();
+            parent.Engine.AddPropertyDefault(UIElement.IsEnabledProperty, true);
+
+            var first = new TestViewModel();
+            first.Engine.AddPropertyDefault(Control.BackgroundProperty, Brushes.White);
+
+            var second = new TestViewModel();
+            second.Engine.AddPropertyDefault(UIElement.OpacityProperty, 1.0);
+
+            var firstBox = new TextBox { DataContext = first };
+            firstBox.SetBinding(TextBox.TextProperty, new Binding(nameof(TestViewModel.Name)));
+            var secondBox = new TextBox { DataContext = second };
+            secondBox.SetBinding(TextBox.TextProperty, new Binding(nameof(TestViewModel.Name)));
+
+            var panel = new StackPanel { DataContext = parent };
+            panel.Children.Add(firstBox);
+            panel.Children.Add(secondBox);
+
+            DependencyBinder.ApplyTo(panel);
+
+            Assert.That(BindingOperations.GetBinding(firstBox, Control.BackgroundProperty).Path.Path,
+                Is.EqualTo("[Background.Name]"));
+            Assert.That(BindingOperations.GetBinding(firstBox, UIElement.OpacityProperty), Is.Null);
+            Assert.That(BindingOperations.GetBinding(secondBox, UIElement.OpacityProperty).Path.Path,
+                Is.EqualTo("[Opacity.Name]"));
+            Assert.That(BindingOperations.GetBinding(secondBox, Control.BackgroundProperty), Is.Null);
+        }
+
+        [Test]
         public void ApplyTo_does_nothing_when_root_or_view_model_is_missing()
         {
             Assert.That(() => DependencyBinder.ApplyTo(null), Throws.Nothing);
@@ -286,6 +317,39 @@ namespace Sigil.Wpf.Tests
             Assert.That(AutoBind.GetEnabled(panel), Is.True);
             AutoBind.SetEnabled(panel, false);
             Assert.That(AutoBind.GetEnabled(panel), Is.False);
+        }
+
+        [Test]
+        public void AutoBind_Enabled_applies_the_elements_own_DataContext()
+        {
+            var row = new TestViewModel();
+            row.Engine.AddPropertyDefault(Control.BackgroundProperty, Brushes.White);
+
+            var box = new TextBox { DataContext = row };
+            box.SetBinding(TextBox.TextProperty, new Binding(nameof(TestViewModel.Name)));
+
+            AutoBind.SetEnabled(box, true);
+
+            Assert.That(BindingOperations.GetBinding(box, Control.BackgroundProperty).Path.Path,
+                Is.EqualTo("[Background.Name]"));
+        }
+
+        [Test]
+        public void AutoBind_DataContextChanged_applies_when_a_generated_cell_receives_its_row()
+        {
+            var row = new TestViewModel();
+            row.Engine.AddPropertyDefault(Control.BackgroundProperty, Brushes.White);
+
+            var box = new TextBox();
+            box.SetBinding(TextBox.TextProperty, new Binding(nameof(TestViewModel.Name)));
+            AutoBind.SetEnabled(box, true);
+
+            Assert.That(BindingOperations.GetBinding(box, Control.BackgroundProperty), Is.Null);
+
+            box.DataContext = row;
+
+            Assert.That(BindingOperations.GetBinding(box, Control.BackgroundProperty).Path.Path,
+                Is.EqualTo("[Background.Name]"));
         }
     }
 }

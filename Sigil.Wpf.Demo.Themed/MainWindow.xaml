@@ -50,7 +50,12 @@
             </Grid.ColumnDefinitions>
 
             <materialDesign:Card Grid.Column="0" Padding="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" MinHeight="180" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Text="Form" />
                         <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"
@@ -118,13 +123,17 @@
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  materialDesign:HintAssist.Hint="Reference (exempt, Material TextBox)"
                                  Margin="0,0,0,16" />
+                    </StackPanel>
+                    </ScrollViewer>
 
-                        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Text="Line items" />
-                        <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                    <DockPanel Grid.Row="1" Margin="0,12,0,0" LastChildFill="True">
+                        <TextBlock DockPanel.Dock="Top" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Text="Line items" />
+                        <TextBlock DockPanel.Dock="Top"
+                                   Style="{StaticResource MaterialDesignCaptionTextBlock}"
                                    Margin="0,4,0,8"
                                    TextWrapping="Wrap"
                                    Text="Line amount limit and highlight apply to the Amount column. Removing a row disposes it (unhooks the parent). Closing the window disposes the rest." />
-                        <DockPanel Margin="0,0,0,8">
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
                             <TextBox DockPanel.Dock="Left"
                                      Text="{Binding LineLimit, UpdateSourceTrigger=PropertyChanged}"
                                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -141,7 +150,7 @@
                                           Style="{StaticResource MaterialDesignCheckBox}" />
                             </StackPanel>
                         </DockPanel>
-                        <WrapPanel Margin="0,0,0,8">
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
                             <Button Content="Add line" Style="{StaticResource MaterialDesignOutlinedButton}" Click="AddLine_OnClick" Margin="0,0,8,8" />
                             <Button Content="Remove selected" Style="{StaticResource MaterialDesignOutlinedButton}" Click="RemoveSelectedLine_OnClick" Margin="0,0,8,8" />
                         </WrapPanel>
@@ -152,7 +161,9 @@
                                   CanUserDeleteRows="False"
                                   HeadersVisibility="Column"
                                   GridLinesVisibility="Horizontal"
-                                  MaxHeight="200">
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  VerticalAlignment="Stretch">
                             <DataGrid.RowStyle>
                                 <Style TargetType="DataGridRow">
                                     <Setter Property="IsEnabled" Value="{Binding IsRowEnabled}" />
@@ -193,8 +204,8 @@
                                 </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
-                    </StackPanel>
-                </ScrollViewer>
+                    </DockPanel>
+                </Grid>
             </materialDesign:Card>
 
             <materialDesign:Card Grid.Column="2" Padding="16">
@@ -211,7 +222,7 @@
                                           IsOn="{Binding IsOnHold}"
                                           Margin="0,4,0,12" />
 
-                        <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}" Text="2. Global" FontWeight="SemiBold" />
+                        <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}" Text="2. All properties" FontWeight="SemiBold" />
                         <mah:ToggleSwitch Content="Lock form"
                                           IsOn="{Binding IsLocked}"
                                           Margin="0,4,0,12" />

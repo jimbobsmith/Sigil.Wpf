@@ -52,11 +52,11 @@ namespace Sigil.Wpf.Demo.Caliburn
             engine.AddPropertyDefault(Control.BorderThicknessProperty, new Thickness(1));
 
             engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => IsLocked, false, RuleResult.FallThrough, "[Global] Form is locked");
+                .AllPropertiesRule(_ => IsLocked, false, RuleResult.FallThrough, "[AllProperties] Form is locked");
             engine.Add.Binding(FrameworkElement.ToolTipProperty)
-                .GlobalRule(_ => IsLocked, "[Global] Form is locked", RuleResult.FallThrough);
+                .AllPropertiesRule(_ => IsLocked, "[AllProperties] Form is locked", RuleResult.FallThrough);
             engine.Add.Binding(UIElement.OpacityProperty)
-                .GlobalRule(_ => IsLocked, 0.45, RuleResult.FallThrough);
+                .AllPropertiesRule(_ => IsLocked, 0.45, RuleResult.FallThrough);
 
             engine.Add.Binding(UIElement.IsEnabledProperty)
                 .PropertyRule(() => Amount, _ => Amount > 1000, false, RuleResult.FallThrough, "[Property] Over the $1,000 limit");

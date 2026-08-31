@@ -30,11 +30,19 @@ namespace Sigil.Wpf.Engine.Impl
         #region Public Methods
 
         /// <inheritdoc />
-        public IRuleEngine GlobalRule(
+        public IRuleEngine AllPropertiesRule(
             Func<string, bool> matchFunction, object? resultIfMatch, object? resultIfNoMatch, string? tooltip = null)
         {
             Engine.AddGlobalRule(DependencyProperty, matchFunction, resultIfMatch, resultIfNoMatch, tooltip);
             return Engine;
+        }
+
+        /// <inheritdoc />
+        [Obsolete("Use AllPropertiesRule. Same behavior: every non-exempt property on this engine.")]
+        public IRuleEngine GlobalRule(
+            Func<string, bool> matchFunction, object? resultIfMatch, object? resultIfNoMatch, string? tooltip = null)
+        {
+            return AllPropertiesRule(matchFunction, resultIfMatch, resultIfNoMatch, tooltip);
         }
 
         /// <inheritdoc />

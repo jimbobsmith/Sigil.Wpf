@@ -44,7 +44,12 @@
             <ColumnDefinition Width="1.15*" />
         </Grid.ColumnDefinitions>
 
-        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" MinHeight="180" />
+            </Grid.RowDefinitions>
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="Form" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4" />
                 <TextBlock Style="{StaticResource Hint}"
@@ -88,17 +93,20 @@
 
                 <TextBlock Style="{StaticResource Label}" Text="Reference  —  [StateChangeExempt], including Opacity" />
                 <TextBox Text="{Binding ReferenceCode, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            </ScrollViewer>
 
-                <TextBlock Text="Line items" FontSize="16" FontWeight="SemiBold" Margin="0,8,0,4" />
-                <TextBlock Style="{StaticResource Hint}"
+            <DockPanel Grid.Row="1" Margin="0,12,0,0" LastChildFill="True">
+                <TextBlock DockPanel.Dock="Top" Text="Line items" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}"
                            Text="Each row is its own SigilViewModel. Line amount limit and highlight apply to the Amount column (yellow over the limit, bold red and disabled over 2×). Freeze Posted, hold, and lock set IsRowEnabled after Status commits (disabling the row on the same turn cancels the ComboBox edit). Removing a row disposes it (unhooks the parent). Closing the window disposes the rest." />
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
                     <TextBlock Text="Line amount limit" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <TextBox Text="{Binding LineLimit, UpdateSourceTrigger=PropertyChanged}" Width="72" Margin="0,0,16,0" />
                     <CheckBox Content="Highlight Amount over the limit" IsChecked="{Binding HighlightOverLimit}" Margin="0,0,16,0" VerticalAlignment="Center" />
                     <CheckBox Content="Freeze Posted rows" IsChecked="{Binding FreezePostedLines}" VerticalAlignment="Center" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
                     <Button Content="Add line" Click="AddLine_OnClick" Margin="0,0,8,0" Padding="10,4" />
                     <Button Content="Remove selected" Click="RemoveSelectedLine_OnClick" Padding="10,4" />
                 </StackPanel>
@@ -109,8 +117,9 @@
                           CanUserDeleteRows="False"
                           HeadersVisibility="Column"
                           GridLinesVisibility="Horizontal"
-                          MaxHeight="200"
-                          Margin="0,0,0,10">
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          VerticalAlignment="Stretch">
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Setter Property="IsEnabled" Value="{Binding IsRowEnabled}" />
@@ -153,14 +162,14 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-            </StackPanel>
-        </ScrollViewer>
+            </DockPanel>
+        </Grid>
 
         <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="Rule levels" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4" />
                 <TextBlock Style="{StaticResource Hint}"
-                           Text="Priority: Temporary, then Global, then Property, then Default. Form fields are Text/SelectedItem only — the engine owns the rest. Exempt fields skip every rule; watch Reference stay crisp when the form fades." />
+                           Text="Priority: Temporary, then AllProperties, then Property, then Default. Form fields are Text/SelectedItem only — the engine owns the rest. Exempt fields skip every rule; watch Reference stay crisp when the form fades." />
 
                 <GroupBox Header="1. TemporaryRule  (highest)">
                     <StackPanel>
@@ -171,7 +180,7 @@
                     </StackPanel>
                 </GroupBox>
 
-                <GroupBox Header="2. GlobalRule">
+                <GroupBox Header="2. AllPropertiesRule">
                     <StackPanel>
                         <CheckBox Content="Lock form  —  IsEnabled + Opacity on every non-exempt field"
                                   IsChecked="{Binding IsLocked}" />

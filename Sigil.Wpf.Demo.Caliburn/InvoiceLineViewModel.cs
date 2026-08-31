@@ -112,27 +112,27 @@ namespace Sigil.Wpf.Demo.Caliburn
             engine.AddPropertyDefault(Control.BorderThicknessProperty, new Thickness(1));
 
             engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => _parent.IsOnHold, false, RuleResult.FallThrough, "[Screen] Held for review");
+                .AllPropertiesRule(_ => _parent.IsOnHold, false, RuleResult.FallThrough, "[Screen] Held for review");
             engine.Add.Binding(FrameworkElement.ToolTipProperty)
-                .GlobalRule(_ => _parent.IsOnHold, "[Screen] Held for review", RuleResult.FallThrough);
+                .AllPropertiesRule(_ => _parent.IsOnHold, "[Screen] Held for review", RuleResult.FallThrough);
             engine.Add.Binding(UIElement.OpacityProperty)
-                .GlobalRule(_ => _parent.IsOnHold, 0.45, RuleResult.FallThrough);
+                .AllPropertiesRule(_ => _parent.IsOnHold, 0.45, RuleResult.FallThrough);
 
             engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => _parent.IsLocked, false, RuleResult.FallThrough, "[Screen] Form is locked");
+                .AllPropertiesRule(_ => _parent.IsLocked, false, RuleResult.FallThrough, "[Screen] Form is locked");
             engine.Add.Binding(FrameworkElement.ToolTipProperty)
-                .GlobalRule(_ => _parent.IsLocked, "[Screen] Form is locked", RuleResult.FallThrough);
+                .AllPropertiesRule(_ => _parent.IsLocked, "[Screen] Form is locked", RuleResult.FallThrough);
             engine.Add.Binding(UIElement.OpacityProperty)
-                .GlobalRule(_ => _parent.IsLocked, 0.45, RuleResult.FallThrough);
+                .AllPropertiesRule(_ => _parent.IsLocked, 0.45, RuleResult.FallThrough);
 
             engine.Add.Binding(UIElement.IsEnabledProperty)
-                .GlobalRule(_ => _parent.FreezePostedLines && Status == "Posted", false, RuleResult.FallThrough,
+                .AllPropertiesRule(_ => _parent.FreezePostedLines && Status == "Posted", false, RuleResult.FallThrough,
                     "[Screen] Posted lines are frozen");
             engine.Add.Binding(FrameworkElement.ToolTipProperty)
-                .GlobalRule(_ => _parent.FreezePostedLines && Status == "Posted",
+                .AllPropertiesRule(_ => _parent.FreezePostedLines && Status == "Posted",
                     "[Screen] Posted lines are frozen", RuleResult.FallThrough);
             engine.Add.Binding(UIElement.OpacityProperty)
-                .GlobalRule(_ => _parent.FreezePostedLines && Status == "Posted", 0.45, RuleResult.FallThrough);
+                .AllPropertiesRule(_ => _parent.FreezePostedLines && Status == "Posted", 0.45, RuleResult.FallThrough);
 
             engine.Add.Binding(UIElement.IsEnabledProperty)
                 .PropertyRule(() => Amount, _ => AmountOverDoubleLimit, false, RuleResult.FallThrough,
