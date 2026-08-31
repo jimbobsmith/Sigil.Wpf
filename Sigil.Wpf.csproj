@@ -45,5 +45,10 @@
     <None Remove="Sigil.Wpf.Demo.Themed\**" />
     <Page Remove="Sigil.Wpf.Demo.Themed\**" />
     <ApplicationDefinition Remove="Sigil.Wpf.Demo.Themed\**" />
+    <Compile Remove="Sigil.Wpf.Demo.Caliburn\**" />
+    <EmbeddedResource Remove="Sigil.Wpf.Demo.Caliburn\**" />
+    <None Remove="Sigil.Wpf.Demo.Caliburn\**" />
+    <Page Remove="Sigil.Wpf.Demo.Caliburn\**" />
+    <ApplicationDefinition Remove="Sigil.Wpf.Demo.Caliburn\**" />
   </ItemGroup>
 </Project>

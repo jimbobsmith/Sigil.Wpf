@@ -1,0 +1,86 @@
+<Window x:Class="Sigil.Wpf.Demo.Caliburn.InvoiceView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:sigil="clr-namespace:Sigil.Wpf.AutoBinder;assembly=Sigil.Wpf"
+        Title="{Binding DisplayName}"
+        Width="720"
+        Height="640"
+        MinWidth="640"
+        MinHeight="520"
+        Background="#F4F4F5"
+        sigil:AutoBind.Enabled="True">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="Padding" Value="6,4" />
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Label">
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Hint">
+            <Setter Property="Foreground" Value="#555" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20">
+            <TextBlock Text="Caliburn.Micro interop" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4" />
+            <TextBlock Style="{StaticResource Hint}"
+                       Text="This window is a Caliburn Screen that implements ISigilViewModel. It does not inherit SigilViewModel. The engine is created in the constructor and disposed in OnDeactivateAsync. XAML binds values; AutoBind attaches the rest. Buttons use cal:Message.Attach." />
+
+            <TextBlock Style="{StaticResource Label}" Text="Name  —  empty: pink + disabled" />
+            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Style="{StaticResource Label}" Text="Amount  —  &gt; $500 yellow, &gt; $1,000 bold red + banner" />
+            <Border Margin="0,0,0,8"
+                    Padding="8,6"
+                    Background="#FFF8E1"
+                    BorderBrush="#FFB300"
+                    BorderThickness="1"
+                    Visibility="{Binding [Visibility.Amount]}">
+                <TextBlock Text="Approval required — amount is over $1,000"
+                           FontWeight="SemiBold"
+                           Foreground="#8A6D00"
+                           TextWrapping="Wrap" />
+            </Border>
+            <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Style="{StaticResource Label}" Text="Reference  —  [StateChangeExempt], including Opacity" />
+            <TextBox Text="{Binding ReferenceCode, UpdateSourceTrigger=PropertyChanged}" />
+
+            <GroupBox Header="Temporary / Global">
+                <StackPanel>
+                    <CheckBox Content="Hold for review  —  TemporaryRule on every non-exempt field"
+                              IsChecked="{Binding IsOnHold}"
+                              Margin="0,0,0,8" />
+                    <CheckBox Content="Lock form  —  GlobalRule IsEnabled + Opacity"
+                              IsChecked="{Binding IsLocked}" />
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="PropertyRule">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Content="Set $250" cal:Message.Attach="SetAmount(250)" Margin="0,0,8,0" Padding="10,4" />
+                        <Button Content="Set $750" cal:Message.Attach="SetAmount(750)" Margin="0,0,8,0" Padding="10,4" />
+                        <Button Content="Set $1,500" cal:Message.Attach="SetAmount(1500)" Padding="10,4" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Clear name" cal:Message.Attach="ClearName" Margin="0,0,8,0" Padding="10,4" />
+                        <Button Content="Restore name" cal:Message.Attach="RestoreName" Padding="10,4" />
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

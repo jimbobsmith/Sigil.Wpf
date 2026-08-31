@@ -54,6 +54,48 @@ public class InvoiceViewModel : SigilViewModel
 
 `SigilViewModel` owns the engine, the `[IsEnabled.Amount]` indexer, and `INotifyPropertyChanged`. Dispose the view model when the view goes away.
 
+## Using your own view-model base
+
+You cannot inherit both `SigilViewModel` and another framework base (`Screen`, `PropertyChangedBase`, …). Implement `ISigilViewModel` on *their* type, keep their base, and dispose the engine when the screen deactivates.
+
+```csharp
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using Caliburn.Micro;
+using Sigil.Wpf;
+using Sigil.Wpf.Engine;
+using Sigil.Wpf.Engine.Impl;
+
+public class InvoiceScreen : Screen, ISigilViewModel
+{
+    public InvoiceScreen()
+    {
+        Engine = SigilEngine.Create(this);
+        Engine.AddPropertyDefault(UIElement.IsEnabledProperty, true);
+        Engine.Add.Binding(UIElement.IsEnabledProperty)
+            .PropertyRule(() => Amount, _ => Amount > 1000, false, RuleResult.FallThrough);
+    }
+
+    public IRuleEngine Engine { get; set; }
+    public object this[string key] => Engine.ApplyRulesTo(key);
+
+    public void RaisePropertyChanged(string propertyName)
+    {
+        NotifyOfPropertyChange(propertyName);
+    }
+
+    protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
+    {
+        if (close)
+            Engine.Dispose();
+        return base.OnDeactivateAsync(close, cancellationToken);
+    }
+}
+```
+
+The library does not ship Caliburn types. See `Sigil.Wpf.Demo.Caliburn` for a running `Screen` + AutoBind window.
+
 ## Rule order
 
 1. **TemporaryRule** — add and remove at runtime (`engine.Remove.TemporaryRule("hold")` deletes it)
@@ -83,11 +125,13 @@ Third-party controls work if they expose a normal WPF `Value` / `Text` / `Select
 | `Sigil.Wpf.Tests` | NUnit tests (both TFMs) |
 | `Sigil.Wpf.Demo` | Stock WPF demo |
 | `Sigil.Wpf.Demo.Themed` | Material Design + MahApps demo |
+| `Sigil.Wpf.Demo.Caliburn` | Caliburn.Micro `Screen` + `ISigilViewModel` |
 
 ```powershell
 dotnet test Sigil.Wpf.sln
 dotnet run --project Sigil.Wpf.Demo
 dotnet run --project Sigil.Wpf.Demo.Themed
+dotnet run --project Sigil.Wpf.Demo.Caliburn
 ```
 
 ## Requirements
