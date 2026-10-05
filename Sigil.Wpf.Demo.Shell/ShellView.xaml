@@ -1,0 +1,68 @@
+<mah:MetroWindow x:Class="Sigil.Wpf.Demo.Shell.ShellView"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:cal="http://www.caliburnproject.org"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                 Title="{Binding DisplayName}"
+                 TitleCharacterCasing="Normal"
+                 Width="1100"
+                 Height="760"
+                 MinWidth="880"
+                 MinHeight="600"
+                 GlowBrush="{DynamicResource PrimaryHueMidBrush}"
+                 WindowStartupLocation="CenterScreen"
+                 TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                 TextElement.FontWeight="Regular"
+                 TextElement.FontSize="14"
+                 TextOptions.TextFormattingMode="Ideal"
+                 TextOptions.TextRenderingMode="Auto"
+                 Background="{DynamicResource MaterialDesignPaper}"
+                 FontFamily="{materialDesign:MaterialDesignFont}">
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button Content="Toggle theme" Click="ToggleTheme_OnClick" />
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+
+    <DockPanel>
+        <materialDesign:ColorZone DockPanel.Dock="Top" Mode="PrimaryMid" Padding="20,14">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ViewDashboard" Width="28" Height="28" VerticalAlignment="Center" Margin="0,0,10,0" />
+                    <TextBlock Text="One engine per screen"
+                               Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBlock Margin="38,6,0,0" Opacity="0.9" TextWrapping="Wrap"
+                           Text="The shell and invoice list have no Sigil engine. Each invoice tab, each grid row, and each dialog creates its own — and disposes it when that screen closes." />
+            </StackPanel>
+        </materialDesign:ColorZone>
+
+        <TabControl ItemsSource="{Binding Items}"
+                    SelectedItem="{Binding ActiveItem}"
+                    Margin="12"
+                    Style="{StaticResource MaterialDesignFilledTabControl}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel LastChildFill="True">
+                        <Button DockPanel.Dock="Right"
+                                Content="✕"
+                                Padding="6,0"
+                                Margin="8,0,0,0"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Visibility="{Binding IsClosable, Converter={StaticResource BoolToVis}}"
+                                cal:Action.TargetWithoutContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                                cal:Message.Attach="CloseTab($dataContext)" />
+                        <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
+                    </DockPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentControl cal:View.Model="{Binding}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </DockPanel>
+</mah:MetroWindow>

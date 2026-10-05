@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>
+    <TargetFrameworks>net8.0-windows;net10.0-windows;net11.0-windows</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>disable</ImplicitUsings>

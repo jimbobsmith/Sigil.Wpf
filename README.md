@@ -95,7 +95,7 @@ public class InvoiceScreen : Screen, ISigilViewModel
 }
 ```
 
-The library does not ship Caliburn types. See `Sigil.Wpf.Demo.Caliburn` for a running `Screen` + AutoBind window.
+The library does not ship Caliburn types. See `Sigil.Wpf.Demo.Caliburn` for a single `Screen`, and `Sigil.Wpf.Demo.Shell` for a Conductor with tabs, a DataGrid, and dialogs (one engine per screen, disposed on close).
 
 ## Rule order
 
@@ -124,20 +124,22 @@ A `DataGrid` row can be its own view model. Bind row chrome to a normal property
 
 | Project | What it is |
 | --- | --- |
-| `Sigil.Wpf` | Library (`net8.0-windows`; `net10.0-windows`) |
-| `Sigil.Wpf.Tests` | NUnit tests (both TFMs) |
+| `Sigil.Wpf` | Library (`net8.0-windows`; `net10.0-windows`; `net11.0-windows`) |
+| `Sigil.Wpf.Tests` | NUnit tests (all three TFMs) |
 | `Sigil.Wpf.Demo` | Stock WPF demo |
 | `Sigil.Wpf.Demo.Themed` | Material Design + MahApps demo |
 | `Sigil.Wpf.Demo.Caliburn` | Caliburn.Micro `Screen` + `ISigilViewModel` |
+| `Sigil.Wpf.Demo.Shell` | Caliburn + Material/MahApps app shell (tabs, grid, dialogs) |
 
 ```powershell
 dotnet test Sigil.Wpf.sln
 dotnet run --project Sigil.Wpf.Demo
 dotnet run --project Sigil.Wpf.Demo.Themed
 dotnet run --project Sigil.Wpf.Demo.Caliburn
+dotnet run --project Sigil.Wpf.Demo.Shell
 ```
 
 ## Requirements
 
-- .NET 8 or .NET 10 Windows SDK
+- .NET 8, .NET 10, or .NET 11 Windows SDK
 - WPF

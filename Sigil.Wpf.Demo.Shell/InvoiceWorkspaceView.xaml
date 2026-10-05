@@ -1,0 +1,150 @@
+<UserControl x:Class="Sigil.Wpf.Demo.Shell.InvoiceWorkspaceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:sigil="clr-namespace:Sigil.Wpf.AutoBinder;assembly=Sigil.Wpf"
+             sigil:AutoBind.Enabled="True">
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" MinHeight="180" />
+        </Grid.RowDefinitions>
+
+        <materialDesign:Card Grid.Row="0" Padding="16" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                           Text="{Binding Number, StringFormat=Invoice {0}}" />
+                <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,4,0,12"
+                           TextWrapping="Wrap"
+                           Text="This tab implements ISigilViewModel. Closing the tab disposes the engine and every line. Lock/hold apply here and to row engines that close over this screen — not to dialogs." />
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="160" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0"
+                             Text="{Binding Customer, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Customer" />
+                    <mah:NumericUpDown Grid.Column="2"
+                                       Value="{Binding Amount}"
+                                       Minimum="0"
+                                       Maximum="20000"
+                                       Interval="50"
+                                       materialDesign:HintAssist.Hint="Amount" />
+                    <ComboBox Grid.Column="4"
+                              ItemsSource="{Binding StatusOptions}"
+                              SelectedItem="{Binding Status}"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                              materialDesign:HintAssist.Hint="Status" />
+                </Grid>
+
+                <materialDesign:Card UniformCornerRadius="4"
+                                     Padding="10"
+                                     Background="#FFF8E1"
+                                     Visibility="{Binding [Visibility.Amount]}"
+                                     Margin="0,12,0,0">
+                    <TextBlock Text="Approval required — amount is over $1,000"
+                               Foreground="#8A6D00"
+                               TextWrapping="Wrap" />
+                </materialDesign:Card>
+
+                <WrapPanel Margin="0,12,0,0">
+                    <mah:ToggleSwitch Content="Hold for review" IsOn="{Binding IsOnHold}" Margin="0,0,16,8" />
+                    <mah:ToggleSwitch Content="Lock invoice" IsOn="{Binding IsLocked}" Margin="0,0,16,8" />
+                    <CheckBox Content="Highlight Amount over the line limit"
+                              IsChecked="{Binding HighlightOverLimit}"
+                              Style="{StaticResource MaterialDesignCheckBox}"
+                              Margin="0,0,16,8"
+                              VerticalAlignment="Center" />
+                    <CheckBox Content="Freeze Posted rows"
+                              IsChecked="{Binding FreezePostedLines}"
+                              Style="{StaticResource MaterialDesignCheckBox}"
+                              Margin="0,0,0,8"
+                              VerticalAlignment="Center" />
+                </WrapPanel>
+            </StackPanel>
+        </materialDesign:Card>
+
+        <materialDesign:Card Grid.Row="1" Padding="16">
+            <DockPanel LastChildFill="True">
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Text="Line items" />
+                <TextBlock DockPanel.Dock="Top"
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,4,0,8"
+                           TextWrapping="Wrap"
+                           Text="Each row is its own ISigilViewModel. Edit line opens a dialog with a separate engine — lock this tab and the dialog still edits." />
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                    <TextBox DockPanel.Dock="Left"
+                             Text="{Binding LineLimit, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Line amount limit"
+                             Width="160"
+                             Margin="0,0,12,0" />
+                    <WrapPanel VerticalAlignment="Center">
+                        <Button Content="Add line" Style="{StaticResource MaterialDesignOutlinedButton}" cal:Message.Attach="AddLine" Margin="0,0,8,0" />
+                        <Button Content="Edit line" Style="{StaticResource MaterialDesignOutlinedButton}" cal:Message.Attach="EditSelectedLine" Margin="0,0,8,0" />
+                        <Button Content="Remove selected" Style="{StaticResource MaterialDesignOutlinedButton}" cal:Message.Attach="RemoveSelectedLine" />
+                    </WrapPanel>
+                </DockPanel>
+                <DataGrid ItemsSource="{Binding Lines}"
+                          SelectedItem="{Binding SelectedLine}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          VerticalAlignment="Stretch">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="IsEnabled" Value="{Binding IsRowEnabled}" />
+                            <Setter Property="Opacity" Value="{Binding RowOpacity}" />
+                            <Setter Property="ToolTip" Value="{Binding RowToolTip}" />
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Item" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0"
+                                             Padding="4,2"
+                                             sigil:AutoBind.Enabled="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Amount" Width="90">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0"
+                                             Padding="4,2"
+                                             sigil:AutoBind.Enabled="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Status" Width="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding StatusOptions}"
+                                              SelectedItem="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              BorderThickness="0"
+                                              sigil:AutoBind.Enabled="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </materialDesign:Card>
+    </Grid>
+</UserControl>

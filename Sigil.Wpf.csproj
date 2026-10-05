@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>
+    <TargetFrameworks>net8.0-windows;net10.0-windows;net11.0-windows</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -22,7 +22,7 @@
     <PackageProjectUrl>https://github.com/jimbobsmith/Sigil.Wpf</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright (c) 2026 Jim Smith</Copyright>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Sigil.Wpf.Tests" />
@@ -50,5 +50,10 @@
     <None Remove="Sigil.Wpf.Demo.Caliburn\**" />
     <Page Remove="Sigil.Wpf.Demo.Caliburn\**" />
     <ApplicationDefinition Remove="Sigil.Wpf.Demo.Caliburn\**" />
+    <Compile Remove="Sigil.Wpf.Demo.Shell\**" />
+    <EmbeddedResource Remove="Sigil.Wpf.Demo.Shell\**" />
+    <None Remove="Sigil.Wpf.Demo.Shell\**" />
+    <Page Remove="Sigil.Wpf.Demo.Shell\**" />
+    <ApplicationDefinition Remove="Sigil.Wpf.Demo.Shell\**" />
   </ItemGroup>
 </Project>
